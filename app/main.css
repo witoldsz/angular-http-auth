@@ -1,0 +1,123 @@
+/* feat: before angular is ready, display loading animation */
+body.waiting-for-angular div#content-outer {
+  display: none;
+}
+body.waiting-for-angular div#initializing-panel {
+  display: block;
+  background: url(../images/loading.gif) center center no-repeat;
+  position:absolute;
+  top:0;
+  left:0;
+  width: 100%;
+  height: 100%;
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+body {
+  background: #fff;
+  color: #393939;
+  font-family: Arial;
+  font-size: 0px;
+  line-height: 0;
+}
+#content-outer {
+  background: url(../images/content_repeat.jpg) repeat-x;
+  background-color: white;
+}
+#content {
+  color: #333;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  margin: 0 auto 0 auto;
+  max-width: 1260px;
+  min-width: 780px;
+  padding: 35px 0px 30px 0px;
+}
+h2 {
+  color: #393939;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+h3 {
+  color: #92b22c;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 18px;
+  margin-bottom: 10px;
+}
+/*  LOGIN -------------------------------------------------------------------------------- */ 
+
+#login-bg {
+  background: url(../images/login/login_bg.jpg) no-repeat top center;
+}
+#login-holder {
+  margin: 0px auto 0 auto;
+  width: 508px;
+  padding-top: 100px;
+}
+#loginbox {
+  background: url(../images/login/loginbox_bg.png) no-repeat;
+  font-size: 12px;
+  height: 212px;
+  line-height: 12px;
+  padding-top: 60px;
+  position: relative;
+  width: 508px;
+}
+#login-inner {
+  color: #161616;
+  font-family: Tahoma;
+  font-size: 13px;
+  line-height: 12px;
+  margin: 0 auto;
+  width: 310px;
+}
+#login-inner label {
+  color: #161616;
+  cursor: pointer;
+  font-family: Tahoma;
+  font-weight: bold;
+  line-height: 12px;
+  padding-left: 10px;
+
+}
+#login-inner th {
+  padding: 0 0 6px 0;
+  text-align: left;
+  width: 95px;
+}
+#login-inner td {
+  padding: 0 0 6px 0;
+}
+.login-inp {
+  background: url(../images/login/inp_login.gif) no-repeat;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  height: 28px;
+  padding: 6px 6px 0 10px;
+  width: 204px;
+}
+.submit-login {
+  background: url(../images/login/submit_login.gif) no-repeat;
+  border: none;
+  cursor: pointer;
+  display: block;
+  height: 29px;
+  text-indent: -3000px;
+  width: 73px;
+}
+.submit-login:hover {
+  background: url(../images/login/submit_login.gif) no-repeat 0 -29px;
+}
