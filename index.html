@@ -19,6 +19,7 @@
       <div id="login-holder">
         <div id="loginbox">
           <div id="login-inner" ng:controller="LoginController">
+            Note: there is no need to enter any credentials.<br>&nbsp;
             <form ng-submit="submit()">
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
@@ -44,17 +45,54 @@
 
         <h1>HTTP Auth Interceptor Module Demo</h1>
         <h2>for AngularJS</h2>
-
-        <h3>Press the button bellow to access public data.</h3>
-        <input type="button" value="Public" ng-click="publicAction()"></input>
-        <p ng-repeat="p in publicContent">{{p}}</p>
+        
+        <h3>What is the purpose of this demo?</h3>
+        <p>
+          This demo application is to show you the implementation of the concept
+          described in 
+          <a href="http://www.espeo.pl/2012/02/26/authentication-in-angularjs-application">
+            Authentication in AngularJS (or similar) based application.
+          </a>
+        </p>
+        <p>
+          This application does not talk to real server, it uses 
+          <a href="http://docs.angularjs.org/api/ngMockE2E"> ngMockE2E module</a> instead.
+        </p>
+        <p>
+          The HTTP Auth Interceptor module source code is available here:
+          <br>
+          <a href="https://github.com/witoldsz/angular-http-auth">
+            https://github.com/witoldsz/angular-http-auth
+          </a>
+        </p>
+        <p>
+          The source code of this demo is available in the same project as 
+          a <a href="http://pages.github.com/">GitHub Pages</a> branch here:
+          <br>
+          <a href="https://github.com/witoldsz/angular-http-auth/tree/gh-pages">
+            https://github.com/witoldsz/angular-http-auth/tree/gh-pages
+          </a>
+        </p>
+        <hr>
+        <br>&nbsp;
+        <h3>Enter some data and submit to send and access public data.</h3>
+        <form ng-submit="publicAction()">
+          Enter public data: 
+          <input type="text" ng-model="publicData">
+          <input type="submit" value="Submit"></input>
+        </form>
+        <p ng-repeat="p in publicContent">Server says: {{p}}</p>
 
         <br/>
         <br/>
 
-        <h3>Press the button bellow to access protected data.</h3>
-        <input type="button" value="Protected" ng-click="restrictedAction()"></input>
-        <p ng-repeat="r in restrictedContent">{{r}}</p>
+        <h3>Enter some data and submit to send and access protected data.</h3>
+        <form ng-submit="restrictedAction()">
+          Enter restricted data:
+          <input type="text" ng-model="restrictedData">
+          <input type="submit" value="Submit"></input>
+        </form>
+        <p ng-repeat="r in restrictedContent">Server says: {{r}}</p>
 
         <br/>
         <br/>
@@ -62,12 +100,41 @@
         <h3>Press the button to log out.</h3>
         <input type="button" value="Log out" ng-click="logout()"></input>
         <p>
-          The button above will actually kill current user's session.
+          The button will tell the server to forget about your session and also
+          it will remove sensitive data from page. 
         </p>
+        <p>
+          In real application it could do
+          something else like:
+        </p>
+        <ul>
+          <li>forcing login window to appear to hide data,</li>
+          <li>reloading web page to purge application from received content or</li>
+          <li>whatever you find appropriate...</li>
+        </ul>
 
+        <div class="clear">&nbsp;</div>
+        
+        <hr>
+        <br>&nbsp;
+    
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'angular-http-auth'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
       </div>
-      <div class="clear">&nbsp;</div>
     </div>
+        
     <script src="lib/jquery-1.7.2.js" type="text/javascript"></script>
     <script src="lib/angular-1.0.1.js" type="text/javascript"></script>
     <script src="lib/angular-mocks-1.0.1.js" type="text/javascript"></script>

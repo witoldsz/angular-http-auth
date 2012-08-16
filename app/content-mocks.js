@@ -1,3 +1,6 @@
+/**
+ * This module is used to simulate backend server for this demo application.
+ */
 angular.module('content-mocks',['ngMockE2E'])
   .run(function($httpBackend) {
 
@@ -12,9 +15,11 @@ angular.module('content-mocks',['ngMockE2E'])
     });
     
     
-    $httpBackend.whenGET('data/public').respond("Public content");
-    $httpBackend.whenGET('data/protected').respond(function() {
-      return authorized ? [200,'Protected content available'] : [401];
+    $httpBackend.whenPOST('data/public').respond(function(method, url, data) {
+      return [200,'I have received and processed your data [' + data + '].'];
+    });
+    $httpBackend.whenPOST('data/protected').respond(function(method, url, data) {
+      return authorized ? [200,'This is confidential [' + data + '].'] : [401];
     });
 
     //otherwise
