@@ -1,16 +1,15 @@
 /**
- * @license Angular HTTP Auth Module
+ * @license HTTP Auth Interceptor Module for AngularJS
  * (c) 2012 Witold Szczerba
  * License: MIT
  */
-angular.module('angular-auth', [])
+angular.module('http-auth-interceptor', [])
 
-  /**
-   * Holds all the requests which failed due to 401 response,
-   * so they can be re-requested in future, once login is completed.
-   */
-  .service('requests401', function() {
-    
+  .provider('authService', function() {
+    /**
+     * Holds all the requests which failed due to 401 response,
+     * so they can be re-requested in future, once login is completed.
+     */
     var buffer = [];
     
     /**
@@ -24,7 +23,7 @@ angular.module('angular-auth', [])
       });
     }
     
-    this.$get = ['$injector', function($injector) {
+    this.$get = ['$rootScope','$injector', function($rootScope, $injector) {
       var $http; //initialized later because of circular dependency problem
       function retry(config, deferred) {
         $http = $http || $injector.get('$http');
@@ -32,13 +31,17 @@ angular.module('angular-auth', [])
           deferred.resolve(response);
         });
       }
+      function retryAll() {
+        for (var i = 0; i < buffer.length; ++i) {
+          retry(buffer[i].config, buffer[i].deferred);
+        }
+        buffer = [];
+      }
 
       return {
-        retryAll: function() {
-          for (var i = 0; i < buffer.length; ++i) {
-            retry(buffer[i].config, buffer[i].deferred);
-          }
-          buffer = [];
+        loginConfirmed: function() {
+          $rootScope.$broadcast('event:auth-loginConfirmed');
+          retryAll();
         }
       }
     }]
@@ -48,9 +51,9 @@ angular.module('angular-auth', [])
    * $http interceptor.
    * On 401 response - it stores the request and broadcasts 'event:angular-auth-loginRequired'.
    */
-  .config(function($httpProvider, requests401Provider) {
+  .config(function($httpProvider, authServiceProvider) {
     
-    var interceptor = function($rootScope, $q) {
+    var interceptor = ['$rootScope', '$q', function($rootScope, $q) {
       function success(response) {
         return response;
       }
@@ -58,8 +61,8 @@ angular.module('angular-auth', [])
       function error(response) {
         if (response.status === 401) {
           var deferred = $q.defer();
-          requests401Provider.pushToBuffer(response.config, deferred);
-          $rootScope.$broadcast('event:angular-auth-loginRequired');
+          authServiceProvider.pushToBuffer(response.config, deferred);
+          $rootScope.$broadcast('event:auth-loginRequired');
           return deferred.promise;
         }
         // otherwise
@@ -70,6 +73,6 @@ angular.module('angular-auth', [])
         return promise.then(success, error);
       }
  
-    };
+    }];
     $httpProvider.responseInterceptors.push(interceptor);
   });
