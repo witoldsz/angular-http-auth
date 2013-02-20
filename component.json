@@ -1,0 +1,11 @@
+{
+  "name": "angular-http-auth",
+  "version": "0.0.0",
+  "main": [ "./src/angular-http-auth.js" ],
+  "dependencies": {},
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/alexanderkjeldaas/angular-http-auth.git"
+  }
+}
