@@ -33,6 +33,15 @@ angular.module('http-auth-interceptor', [])
     /**
      * Executes each of the ignore expressions to determine whether the URL
      * should be ignored.
+     * 
+     * Example:
+     *
+     *     angular.module('mod', ['http-auth-interceptor'])
+     *       .config(function (authServiceProvider) {
+     *         authServiceProvider.addIgnoreUrlExpression(function (response) {
+     *           return response.config.url === "/api/auth";
+     *         });
+     *       });
      */
     this.shouldIgnoreUrl = function (response) {
       var fn, i, j = ignoreUrlExpressions.length;
