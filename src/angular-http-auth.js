@@ -28,6 +28,7 @@ angular.module('http-auth-interceptor', [])
      */
     this.addIgnoreUrlExpression = function (fn) {
       if (angular.isFunction(fn)) { ignoreUrlExpressions.push(fn); }
+      return this;
     };
 
     /**
