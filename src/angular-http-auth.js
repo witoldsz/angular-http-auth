@@ -22,45 +22,123 @@ angular.module('http-auth-interceptor', [])
 
     /**
      * Adds functions to the `urlHandlers` array.
-     * The fn function takes a response and a deferred object as arguments
-     * and returns `true` if the URL has been handled or `false` if default
-     * handling should occur. When `true` is returned no other expressions will
-     # be tested.
-     */
-    this.addUrlHandler = function (fn) {
-      if (angular.isFunction(fn)) { urlHandlers.push(fn); }
-      return this;
-    };
-
-    /**
-     * Executes each of the ignore expressions to determine whether the URL
-     * should be ignored.
+     * The `method` is the name of the HTTP method (GET, POST, etc.) #optional
+     * The `url` can be either a string or a RegEx #optional
+     * The `handler` argument is a method that receives a `response` and a
+     * `deferred` as arguments and returns `true` if the URL has been handled or
+     * `false` if default handling should occur. When `true` is returned no
+     * other expressions will be tested.
      *
-     * By gaining access to the deferred object we can prevent the deault
-     * functionality for ignored routes. For instance from a custom service we
-     * can now handle an error that may occur when logging in, perhaps
-     * credentials were incorrect.
-     * 
      * Example:
      *
      *     angular.module('mod', ['http-auth-interceptor'])
      *       .config(function ($rootScope, authServiceProvider) {
-     *         authServiceProvider.addUrlHandler(function (response, deferred) {
-     *           var handled = response.config.url === "/api/auth";
-     *           if (handled) {
+     *         authServiceProvider
+     *           // method & url based
+     *           .when('POST', '/api/auth', function (response, deferred) {
      *             deferred.reject(response);
      *             $rootScope.$broadcast 'event:authorization-failed'
-     *           }
-     *           return handled;
-     *         });
+     *             return true;
+     *           })
+     *           // url based
+     *           .when('/api/auth', function (response, deferred) {
+     *             deferred.reject(response);
+     *             $rootScope.$broadcast 'event:authorization-failed'
+     *             return true;
+     *           })
+     *           // handler based
+     *           .when(function (response, deferred) {
+     *             var handled = response.config.url === "/api/auth";
+     *             if (handled) {
+     *               deferred.reject(response);
+     *               $rootScope.$broadcast 'event:authorization-failed'
+     *             }
+     *             return handled;
+     *           });
      *       });
      */
-    this.handleUrl = function (response, deferred) {
-      var fn, i, j = urlHandlers.length;
+    this.when = function (method, url, handler) {
+      if (angular.isFunction(method)) {
+        urlHandlers.push({handler: method});
+      } else if (angular.isString(method) && angular.isFunction(url)) {
+        urlHandlers.push({
+          url: method,
+          handler: url
+        });
+      } else if (angular.isFunction(handler)) {
+        urlHandlers.push({
+          method: method,
+          url: url,
+          handler: handler
+        });
+      }
+      return this;
+    };
+
+    this.whenGET = function (url, handler) {
+      this.when('GET', url, handler);
+    };
+    this.whenPOST = function (url, handler) {
+      this.when('POST', url, handler);
+    };
+    this.whenPUT = function (url, handler) {
+      this.when('PUT', url, handler);
+    };
+    this.whenDELETE = function (url, handler) {
+      this.when('DELETE', url, handler);
+    };
+    this.whenHEAD = function (url, handler) {
+      this.when('HEAD', url, handler);
+    };
+    this.whenJSONP = function (url, handler) {
+      this.when('JSONP', url, handler);
+    };
+    this.whenPATCH = function (url, handler) {
+      this.when('PATCH', url, handler);
+    };
+
+    /**
+     * helps in matching http methods and URLs by utilizing both exact matching
+     * and regular expression pattern matching.
+     */
+    var matchesPattern = function (pattern, val) {
+      // If `pattern` is a regular expression
+      if (pattern instanceof RegExp) { return pattern.test(val); }
+
+      // Exact match if pattern is not a regular expression
+      return val === pattern;
+    };
+
+    /**
+     * Executes each of the handler methods to determine whether the URL
+     * should be ignored.
+     *
+     * By gaining access to the deferred object we can prevent the deault
+     * functionality for handled routes. For instance from a controller we
+     * can now handle an error that may occur when logging in, perhaps
+     * credentials were incorrect.
+     */
+    this.didHandleUrl = function (response, deferred) {
+      var fn, handler = null, i, j = urlHandlers.length;
 
       for (i = 0; i < j; i++) {
         fn = urlHandlers[i];
-        if (fn(response, deferred) === true) { return true; }
+        handler = null;
+
+        if (fn.method && fn.url) {
+          if (matchesPattern(fn.method, response.config.method) &&
+              matchesPattern(fn.url, response.config.url)) {
+            handler = fn.handler;
+          }
+        } else if (fn.url) {
+          if (matchesPattern(fn.url, response.config.url)) {
+            handler = fn.handler;
+          }
+        } else {
+          handler = fn.handler;
+        }
+
+        if (handler && handler(response, deferred) === true) { return true; }
       }
 
       return false;
@@ -120,7 +198,7 @@ angular.module('http-auth-interceptor', [])
 
           // The event is now only broadcast if the URL is not ignored.
           // This helps when an ignored route effects the deferred object
-          if (!authServiceProvider.handleUrl(response, deferred)) {
+          if (!authServiceProvider.didHandleUrl(response, deferred)) {
             authServiceProvider.pushToBuffer(response.config, deferred);
             $rootScope.$broadcast('event:auth-loginRequired');
           }
