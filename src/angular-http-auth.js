@@ -5,6 +5,7 @@
  * (c) 2012 Witold Szczerba
  * License: MIT
  */
+
 angular.module('http-auth-interceptor', [])
 
   .provider('authService', function () {
@@ -15,41 +16,51 @@ angular.module('http-auth-interceptor', [])
     var buffer = [];
 
     /**
-     * Holds a list of functions that define rules for ignoring
-     * the addition of requests to the buffer.
+     * Holds a list of functions that define rules for custom URL handlers
      */
-    var ignoreUrlExpressions = [];
+    var urlHandlers = [];
 
     /**
-     * Adds functions to the `ignoreUrlExpressions` array.
-     * The fn function takes a URL as a response as an argument and returns
-     * `true` (to ignore the URL) or `false` (to allow the URL). When `true` is
-     * returned no other expressions will be tested.
+     * Adds functions to the `urlHandlers` array.
+     * The fn function takes a response and a deferred object as arguments
+     * and returns `true` if the URL has been handled or `false` if default
+     * handling should occur. When `true` is returned no other expressions will
+     # be tested.
      */
-    this.addIgnoreUrlExpression = function (fn) {
-      if (angular.isFunction(fn)) { ignoreUrlExpressions.push(fn); }
+    this.addUrlHandler = function (fn) {
+      if (angular.isFunction(fn)) { urlHandlers.push(fn); }
       return this;
     };
 
     /**
      * Executes each of the ignore expressions to determine whether the URL
      * should be ignored.
+     *
+     * By gaining access to the deferred object we can prevent the deault
+     * functionality for ignored routes. For instance from a custom service we
+     * can now handle an error that may occur when logging in, perhaps
+     * credentials were incorrect.
      * 
      * Example:
      *
      *     angular.module('mod', ['http-auth-interceptor'])
-     *       .config(function (authServiceProvider) {
-     *         authServiceProvider.addIgnoreUrlExpression(function (response) {
-     *           return response.config.url === "/api/auth";
+     *       .config(function ($rootScope, authServiceProvider) {
+     *         authServiceProvider.addUrlHandler(function (response, deferred) {
+     *           var handled = response.config.url === "/api/auth";
+     *           if (handled) {
+     *             deferred.reject(response);
+     *             $rootScope.$broadcast 'event:authorization-failed'
+     *           }
+     *           return handled;
      *         });
      *       });
      */
-    this.shouldIgnoreUrl = function (response) {
-      var fn, i, j = ignoreUrlExpressions.length;
+    this.handleUrl = function (response, deferred) {
+      var fn, i, j = urlHandlers.length;
 
       for (i = 0; i < j; i++) {
-        fn = ignoreUrlExpressions[i];
-        if (fn(response) === true) { return true; }
+        fn = urlHandlers[i];
+        if (fn(response, deferred) === true) { return true; }
       }
 
       return false;
@@ -107,11 +118,13 @@ angular.module('http-auth-interceptor', [])
         if (response.status === 401) {
           var deferred = $q.defer();
 
-          if (!authServiceProvider.shouldIgnoreUrl(response)) {
+          // The event is now only broadcast if the URL is not ignored.
+          // This helps when an ignored route effects the deferred object
+          if (!authServiceProvider.handleUrl(response, deferred)) {
             authServiceProvider.pushToBuffer(response.config, deferred);
+            $rootScope.$broadcast('event:auth-loginRequired');
           }
 
-          $rootScope.$broadcast('event:auth-loginRequired');
           return deferred.promise;
         }
         // otherwise
