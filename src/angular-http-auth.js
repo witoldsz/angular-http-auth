@@ -5,6 +5,7 @@
  * (c) 2012 Witold Szczerba
  * License: MIT
  */
+
 angular.module('http-auth-interceptor', [])
 
   .provider('authService', function () {
@@ -14,42 +15,134 @@ angular.module('http-auth-interceptor', [])
      */
     var buffer = [];
 
-    /**
-     * Holds a list of functions that define rules for ignoring
-     * the addition of requests to the buffer.
-     */
-    var ignoreUrlExpressions = [];
+    /** Holds a list of functions that define rules for custom URL handlers */
+    var urlHandlers = [];
 
     /**
-     * Adds functions to the `ignoreUrlExpressions` array.
-     * The fn function takes a URL as a response as an argument and returns
-     * `true` (to ignore the URL) or `false` (to allow the URL). When `true` is
-     * returned no other expressions will be tested.
+     * Adds URL handlers
+     * 
+     * @funciton
+     * @name urlHandlers
+     * @param {String|Regexp} method the HTTP method pattern to match against
+     * @param {String|Regexp} url the URL pattern to match against
+     * @param {Function} handler the method to execute when the patterns match
+     * @returns {Boolean} returns true if the URL was handled otherwise false
+     * 
+     * The handler argument is a method that receives two paramters, the
+     * response object and the deferred object.
+     * 
+     * If the URL was handled and true is returned then no other handlers will
+     * be invoked.
+     *
+     * @example
+     *   angular.module('mod', ['http-auth-interceptor'])
+     *     .config(function ($rootScope, authServiceProvider) {
+     *       authServiceProvider
+     *         // method & url based
+     *         .when('POST', '/api/auth', function (response, deferred) {
+     *           deferred.reject(response);
+     *           $rootScope.$broadcast 'event:authorization-failed'
+     *           return true;
+     *         })
+     *         // url based
+     *         .when('/api/auth', function (response, deferred) {
+     *           deferred.reject(response);
+     *           $rootScope.$broadcast 'event:authorization-failed'
+     *           return true;
+     *         })
+     *         // handler based
+     *         .when(function (response, deferred) {
+     *           var handled = response.config.url === "/api/auth";
+     *           if (handled) {
+     *             deferred.reject(response);
+     *             $rootScope.$broadcast 'event:authorization-failed'
+     *           }
+     *           return handled;
+     *         });
+     *     });
      */
-    this.addIgnoreUrlExpression = function (fn) {
-      if (angular.isFunction(fn)) { ignoreUrlExpressions.push(fn); }
+    this.when = function (method, url, handler) {
+      if (angular.isFunction(method)) {
+        urlHandlers.push({handler: method});
+      } else if (angular.isString(method) && angular.isFunction(url)) {
+        urlHandlers.push({
+          url: method,
+          handler: url
+        });
+      } else if (angular.isFunction(handler)) {
+        urlHandlers.push({
+          method: method,
+          url: url,
+          handler: handler
+        });
+      }
       return this;
     };
 
+    this.whenGET = function (url, handler) {
+      this.when('GET', url, handler);
+    };
+    this.whenPOST = function (url, handler) {
+      this.when('POST', url, handler);
+    };
+    this.whenPUT = function (url, handler) {
+      this.when('PUT', url, handler);
+    };
+    this.whenDELETE = function (url, handler) {
+      this.when('DELETE', url, handler);
+    };
+    this.whenHEAD = function (url, handler) {
+      this.when('HEAD', url, handler);
+    };
+    this.whenJSONP = function (url, handler) {
+      this.when('JSONP', url, handler);
+    };
+    this.whenPATCH = function (url, handler) {
+      this.when('PATCH', url, handler);
+    };
+
     /**
-     * Executes each of the ignore expressions to determine whether the URL
-     * should be ignored.
-     * 
-     * Example:
-     *
-     *     angular.module('mod', ['http-auth-interceptor'])
-     *       .config(function (authServiceProvider) {
-     *         authServiceProvider.addIgnoreUrlExpression(function (response) {
-     *           return response.config.url === "/api/auth";
-     *         });
-     *       });
+     * helps in matching http methods and URLs by utilizing both exact matching
+     * and regular expression pattern matching.
      */
-    this.shouldIgnoreUrl = function (response) {
-      var fn, i, j = ignoreUrlExpressions.length;
+    var matchesPattern = function (pattern, val) {
+      // If `pattern` is a regular expression
+      if (pattern instanceof RegExp) { return pattern.test(val); }
+
+      // Exact match if pattern is not a regular expression
+      return val === pattern;
+    };
+
+    /**
+     * Executes each of the handler methods to determine whether the URL
+     * should be ignored.
+     *
+     * By gaining access to the deferred object we can prevent the deault
+     * functionality for handled routes. For instance from a controller we
+     * can now handle an error that may occur when logging in, an example would
+     * be if credentials were incorrect.
+     */
+    this.didHandleUrl = function (response, deferred) {
+      var fn, handler = null, i, j = urlHandlers.length;
 
       for (i = 0; i < j; i++) {
-        fn = ignoreUrlExpressions[i];
-        if (fn(response) === true) { return true; }
+        fn = urlHandlers[i];
+        handler = null;
+
+        if (fn.method && fn.url) {
+          if (matchesPattern(fn.method, response.config.method) &&
+              matchesPattern(fn.url, response.config.url)) {
+            handler = fn.handler;
+          }
+        } else if (fn.url) {
+          if (matchesPattern(fn.url, response.config.url)) {
+            handler = fn.handler;
+          }
+        } else {
+          handler = fn.handler;
+        }
+
+        if (handler && handler(response, deferred) === true) { return true; }
       }
 
       return false;
@@ -107,11 +200,13 @@ angular.module('http-auth-interceptor', [])
         if (response.status === 401) {
           var deferred = $q.defer();
 
-          if (!authServiceProvider.shouldIgnoreUrl(response)) {
+          // The event is now only broadcast if the URL is not ignored.
+          // This helps when an ignored route effects the deferred object
+          if (!authServiceProvider.didHandleUrl(response, deferred)) {
             authServiceProvider.pushToBuffer(response.config, deferred);
+            $rootScope.$broadcast('event:auth-loginRequired');
           }
 
-          $rootScope.$broadcast('event:auth-loginRequired');
           return deferred.promise;
         }
         // otherwise
