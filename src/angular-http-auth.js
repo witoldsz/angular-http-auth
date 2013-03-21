@@ -1,3 +1,5 @@
+/*global angular:true, browser:true */
+
 /**
  * @license HTTP Auth Interceptor Module for AngularJS
  * (c) 2012 Witold Szczerba
