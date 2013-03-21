@@ -15,47 +15,51 @@ angular.module('http-auth-interceptor', [])
      */
     var buffer = [];
 
-    /**
-     * Holds a list of functions that define rules for custom URL handlers
-     */
+    /** Holds a list of functions that define rules for custom URL handlers */
     var urlHandlers = [];
 
     /**
-     * Adds functions to the `urlHandlers` array.
-     * The `method` is the name of the HTTP method (GET, POST, etc.) #optional
-     * The `url` can be either a string or a RegEx #optional
-     * The `handler` argument is a method that receives a `response` and a
-     * `deferred` as arguments and returns `true` if the URL has been handled or
-     * `false` if default handling should occur. When `true` is returned no
-     * other expressions will be tested.
+     * Adds URL handlers
+     * 
+     * @funciton
+     * @name urlHandlers
+     * @param {String|Regexp} method the HTTP method pattern to match against
+     * @param {String|Regexp} url the URL pattern to match against
+     * @param {Function} handler the method to execute when the patterns match
+     * @returns {Boolean} returns true if the URL was handled otherwise false
+     * 
+     * The handler argument is a method that receives two paramters, the
+     * response object and the deferred object.
+     * 
+     * If the URL was handled and true is returned then no other handlers will
+     * be invoked.
      *
-     * Example:
-     *
-     *     angular.module('mod', ['http-auth-interceptor'])
-     *       .config(function ($rootScope, authServiceProvider) {
-     *         authServiceProvider
-     *           // method & url based
-     *           .when('POST', '/api/auth', function (response, deferred) {
+     * @example
+     *   angular.module('mod', ['http-auth-interceptor'])
+     *     .config(function ($rootScope, authServiceProvider) {
+     *       authServiceProvider
+     *         // method & url based
+     *         .when('POST', '/api/auth', function (response, deferred) {
+     *           deferred.reject(response);
+     *           $rootScope.$broadcast 'event:authorization-failed'
+     *           return true;
+     *         })
+     *         // url based
+     *         .when('/api/auth', function (response, deferred) {
+     *           deferred.reject(response);
+     *           $rootScope.$broadcast 'event:authorization-failed'
+     *           return true;
+     *         })
+     *         // handler based
+     *         .when(function (response, deferred) {
+     *           var handled = response.config.url === "/api/auth";
+     *           if (handled) {
      *             deferred.reject(response);
      *             $rootScope.$broadcast 'event:authorization-failed'
-     *             return true;
-     *           })
-     *           // url based
-     *           .when('/api/auth', function (response, deferred) {
-     *             deferred.reject(response);
-     *             $rootScope.$broadcast 'event:authorization-failed'
-     *             return true;
-     *           })
-     *           // handler based
-     *           .when(function (response, deferred) {
-     *             var handled = response.config.url === "/api/auth";
-     *             if (handled) {
-     *               deferred.reject(response);
-     *               $rootScope.$broadcast 'event:authorization-failed'
-     *             }
-     *             return handled;
-     *           });
-     *       });
+     *           }
+     *           return handled;
+     *         });
+     *     });
      */
     this.when = function (method, url, handler) {
       if (angular.isFunction(method)) {
@@ -115,8 +119,8 @@ angular.module('http-auth-interceptor', [])
      *
      * By gaining access to the deferred object we can prevent the deault
      * functionality for handled routes. For instance from a controller we
-     * can now handle an error that may occur when logging in, perhaps
-     * credentials were incorrect.
+     * can now handle an error that may occur when logging in, an example would
+     * be if credentials were incorrect.
      */
     this.didHandleUrl = function (response, deferred) {
       var fn, handler = null, i, j = urlHandlers.length;
