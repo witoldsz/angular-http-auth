@@ -12,8 +12,8 @@
 
   .factory('authService', ['$rootScope','httpBuffer', function($rootScope, httpBuffer) {
     return {
-      loginConfirmed: function() {
-        $rootScope.$broadcast('event:auth-loginConfirmed');
+      loginConfirmed: function(data) {
+        $rootScope.$broadcast('event:auth-loginConfirmed', data);
         httpBuffer.retryAll();
       }
     };
