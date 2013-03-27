@@ -84,8 +84,8 @@ angular.module('http-auth-interceptor', [])
       }
 
       return {
-        loginConfirmed: function () {
-          $rootScope.$broadcast('event:auth-loginConfirmed');
+        loginConfirmed: function (data) {
+          $rootScope.$broadcast('event:auth-loginConfirmed', data);
           retryAll();
         }
       };
