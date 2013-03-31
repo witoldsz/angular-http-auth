@@ -21,8 +21,11 @@ of every HTTP 401 response is buffered and everytime it happens, the
 'event:auth-loginRequired' message is broadcasted from $rootScope.
 
 The 'authService' has only one method: #loginConfirmed().
-You are responsible to invoke this method after user logged in.
-It will retry all the requests previously failed due to HTTP 401 response.
+You are responsible to invoke this method after user logged in. You may optionally pass in 
+a data argument to the loginConfirmed method which will be passed on to the loginConfirmed
+$broadcast. This may be useful, for example if you need to pass through details of the user 
+that was logged in. The 'authService' will then retry all the requests previously failed due 
+to HTTP 401 response.
 
 ###Typical use case:
 
