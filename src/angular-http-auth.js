@@ -51,7 +51,8 @@ angular.module('http-auth-interceptor', [])
 
   /**
    * $http interceptor.
-   * On 401 response - it stores the request and broadcasts 'event:angular-auth-loginRequired'.
+   * On 401 response (without 'ignoreAuthModule' option) - it stores the request 
+   * and broadcasts 'event:angular-auth-loginRequired'.
    */
   .config(['$httpProvider', 'authServiceProvider', function($httpProvider, authServiceProvider) {
     
@@ -61,13 +62,13 @@ angular.module('http-auth-interceptor', [])
       }
  
       function error(response) {
-        if (response.status === 401) {
+        if (response.status === 401 && !response.config.ignoreAuthModule) {
           var deferred = $q.defer();
           authServiceProvider.pushToBuffer(response.config, deferred);
           $rootScope.$broadcast('event:auth-loginRequired');
           return deferred.promise;
         }
-        // otherwise
+        // otherwise, default behaviour
         return $q.reject(response);
       }
  
