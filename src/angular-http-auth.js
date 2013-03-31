@@ -5,7 +5,9 @@
  * (c) 2012 Witold Szczerba
  * License: MIT
  */
-angular.module('http-auth-interceptor', [])
+(function () {
+  'use strict';
+  angular.module('http-auth-interceptor', [])
 
   .provider('authService', function() {
     /**
@@ -23,7 +25,7 @@ angular.module('http-auth-interceptor', [])
         config: config, 
         deferred: deferred
       });
-    }
+    };
     
     this.$get = ['$rootScope','$injector', function($rootScope, $injector) {
       var $http; //initialized later because of circular dependency problem
@@ -79,3 +81,4 @@ angular.module('http-auth-interceptor', [])
     }];
     $httpProvider.responseInterceptors.push(interceptor);
   }]);
+})();
