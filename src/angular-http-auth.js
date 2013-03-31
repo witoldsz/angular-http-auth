@@ -7,58 +7,26 @@
  */
 (function () {
   'use strict';
-  angular.module('http-auth-interceptor', [])
+  
+  angular.module('http-auth-interceptor', ['http-auth-interceptor-buffer'])
 
-  .provider('authService', function() {
-    /**
-     * Holds all the requests which failed due to 401 response,
-     * so they can be re-requested in future, once login is completed.
-     */
-    var buffer = [];
-    
-    /**
-     * Required by HTTP interceptor.
-     * Function is attached to provider to be invisible for regular users of this service.
-     */
-    this.pushToBuffer = function(config, deferred) {
-      buffer.push({
-        config: config, 
-        deferred: deferred
-      });
+  .factory('authService', ['$rootScope','httpBuffer', function($rootScope, httpBuffer) {
+    return {
+      loginConfirmed: function() {
+        $rootScope.$broadcast('event:auth-loginConfirmed');
+        httpBuffer.retryAll();
+      }
     };
-    
-    this.$get = ['$rootScope','$injector', function($rootScope, $injector) {
-      var $http; //initialized later because of circular dependency problem
-      function retry(config, deferred) {
-        $http = $http || $injector.get('$http');
-        $http(config).then(function(response) {
-          deferred.resolve(response);
-        });
-      }
-      function retryAll() {
-        for (var i = 0; i < buffer.length; ++i) {
-          retry(buffer[i].config, buffer[i].deferred);
-        }
-        buffer = [];
-      }
-
-      return {
-        loginConfirmed: function() {
-          $rootScope.$broadcast('event:auth-loginConfirmed');
-          retryAll();
-        }
-      }
-    }]
-  })
+  }])
 
   /**
    * $http interceptor.
-   * On 401 response (without 'ignoreAuthModule' option) - it stores the request 
+   * On 401 response (without 'ignoreAuthModule' option) stores the request 
    * and broadcasts 'event:angular-auth-loginRequired'.
    */
-  .config(['$httpProvider', 'authServiceProvider', function($httpProvider, authServiceProvider) {
+  .config(['$httpProvider', function($httpProvider) {
     
-    var interceptor = ['$rootScope', '$q', function($rootScope, $q) {
+    var interceptor = ['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
       function success(response) {
         return response;
       }
@@ -66,7 +34,7 @@
       function error(response) {
         if (response.status === 401 && !response.config.ignoreAuthModule) {
           var deferred = $q.defer();
-          authServiceProvider.pushToBuffer(response.config, deferred);
+          httpBuffer.append(response.config, deferred);
           $rootScope.$broadcast('event:auth-loginRequired');
           return deferred.promise;
         }
@@ -76,9 +44,51 @@
  
       return function(promise) {
         return promise.then(success, error);
-      }
+      };
  
     }];
     $httpProvider.responseInterceptors.push(interceptor);
+  }]);
+  
+  /**
+   * Private module, an utility, required internally by 'http-auth-interceptor'.
+   */
+  angular.module('http-auth-interceptor-buffer', [])
+
+  .factory('httpBuffer', ['$injector', function($injector) {
+    /** Holds all the requests, so they can be re-requested in future. */
+    var buffer = [];
+    
+    /** Service initialized later because of circular dependency problem. */
+    var $http; 
+    
+    function retryHttpRequest(config, deferred) {
+      $http = $http || $injector.get('$http');
+      $http(config).then(function(response) {
+        deferred.resolve(response);
+      });
+    }
+    
+    return {
+      /**
+       * Appends HTTP request configuration object with deferred response attached to buffer.
+       */
+      append: function(config, deferred) {
+        buffer.push({
+          config: config, 
+          deferred: deferred
+        });      
+      },
+              
+      /**
+       * Retries all the buffered requests clears the buffer.
+       */
+      retryAll: function() {
+        for (var i = 0; i < buffer.length; ++i) {
+          retryHttpRequest(buffer[i].config, buffer[i].deferred);
+        }
+        buffer = [];
+      }
+    };
   }]);
 })();
