@@ -12,6 +12,12 @@
 
   .factory('authService', ['$rootScope','httpBuffer', function($rootScope, httpBuffer) {
     return {
+      /**
+       * call this function to indicate that authentication was successfull and trigger a 
+       * retry of all deferred requests.
+       * @param data an optional argument to pass on to $broadcast which may be useful for
+       * example if you need to pass through details of the user that was logged in
+       */
       loginConfirmed: function(data) {
         $rootScope.$broadcast('event:auth-loginConfirmed', data);
         httpBuffer.retryAll();
