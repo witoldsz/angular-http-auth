@@ -1,5 +1,8 @@
-angular.module('angular-auth-demo').controller({
-  ContentController: function ($scope, $http) {
+(function() {
+  'use strict';
+  angular.module('content', [])
+  
+  .controller('ContentController', function ($scope, $http) {
 
     $scope.publicContent = [];
     $scope.restrictedContent = [];
@@ -22,7 +25,5 @@ angular.module('angular-auth-demo').controller({
         $scope.restrictedContent = [];
       });
     }
-  }
-  
-});
-
+  });
+})();
