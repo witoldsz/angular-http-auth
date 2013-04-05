@@ -69,10 +69,14 @@
     var $http; 
     
     function retryHttpRequest(config, deferred) {
-      $http = $http || $injector.get('$http');
-      $http(config).then(function(response) {
+      function successCallback(response) {
         deferred.resolve(response);
-      });
+      }
+      function errorCallback(response) {
+        deferred.reject(response);
+      }
+      $http = $http || $injector.get('$http');
+      $http(config).then(successCallback, errorCallback);
     }
     
     return {
