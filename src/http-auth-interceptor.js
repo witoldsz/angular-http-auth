@@ -57,7 +57,7 @@
   }]);
   
   /**
-   * Private module, an utility, required internally by 'http-auth-interceptor'.
+   * Private module, a utility, required internally by 'http-auth-interceptor'.
    */
   angular.module('http-auth-interceptor-buffer', [])
 
