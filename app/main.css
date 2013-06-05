@@ -55,10 +55,12 @@ h3 {
   line-height: 18px;
   margin-bottom: 10px;
 }
-/*  LOGIN -------------------------------------------------------------------------------- */ 
+/*  LOGIN -------------------------------------------------------------------------------- */
 
 #login-bg {
   background: url(../images/login/login_bg.jpg) no-repeat top center;
+  /* background-size: cover; */
+  height: 500px;
 }
 #login-holder {
   margin: 0px auto 0 auto;
@@ -67,18 +69,20 @@ h3 {
 }
 #loginbox {
   background: url(../images/login/loginbox_bg.png) no-repeat;
+/*  background-size: cover; */
   font-size: 12px;
-  height: 212px;
+/*  height: 400px; */
   line-height: 12px;
-  padding-top: 60px;
+  padding-top: 30px;
   position: relative;
   width: 508px;
+  height: 230px;
 }
 #login-inner {
   color: #161616;
   font-family: Tahoma;
   font-size: 13px;
-  line-height: 12px;
+  line-height: 16px;
   margin: 0 auto;
   width: 310px;
 }
@@ -108,15 +112,34 @@ h3 {
   padding: 6px 6px 0 10px;
   width: 204px;
 }
+#login-inner button {
+  display: inline;
+}
 .submit-login {
-  background: url(../images/login/submit_login.gif) no-repeat;
+  background: url(../images/login/inp_login.gif) no-repeat;
   border: none;
+  color: #fff;
   cursor: pointer;
+  font-size: 12px;
   display: block;
   height: 29px;
-  text-indent: -3000px;
   width: 73px;
 }
 .submit-login:hover {
-  background: url(../images/login/submit_login.gif) no-repeat 0 -29px;
+  background: none;
+  background-color: black;
+}
+.cancel-login {
+  background: url(../images/login/inp_login.gif) no-repeat;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  display: block;
+  height: 29px;
+  width: 73px;
+}
+.cancel-login:hover {
+  background: none;
+  background-color: black;
 }
