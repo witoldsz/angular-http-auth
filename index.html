@@ -21,23 +21,25 @@
     </script>
 
   </head>
-  
-  <body ng-app="angular-auth-demo" class="auth-demo-application waiting-for-angular"> 
+
+  <body ng-app="angular-auth-demo" class="auth-demo-application waiting-for-angular">
 
     <a href="https://github.com/witoldsz/angular-http-auth">
-      <img style="position: absolute; top: 0; right: 0; border: 0;" 
-           src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" 
+      <img style="position: absolute; top: 0; right: 0; border: 0;"
+           src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
            alt="Fork me on GitHub">
     </a>
-    
+
     <div id="initializing-panel"></div>
 
     <div id="content-outer">
 
-      <div id="login-holder">
+      <div id="login-holder" ng:controller="LoginController">
         <div id="loginbox">
-          <div id="login-inner" ng:controller="LoginController">
-            Note: there is no need to enter any credentials.<br>&nbsp;
+          <p style="color: red; height: 16px; line-height: 16px; font-size: 14px; padding-left: 20px;" ng-show="requiredPermission">You must have the "{{requiredPermission}}" permission to access this functionality.</p>
+          <div id="login-inner">
+            Note: you can access "protected" content by logging in with any (non-empty) username.<br/><br/>
+            Note: you can access "admin" content by logging in with username "admin".<br/><br/>
             <form ng-submit="submit()">
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
@@ -48,11 +50,8 @@
                   <th>Password</th>
                   <td><input type="password" class="login-inp" ng-model="password"/></td>
                 </tr>
-                <tr>
-                  <th></th>
-                  <td><input type="submit" class="submit-login"/></td>
-                </tr>
               </table>
+              <button ng-click="login()" class="submit-login">Login</button><button ng-click="cancel()" class="cancel-login"/>Cancel</button>
             </form>
           </div>
           <div class="clear"></div>
@@ -63,17 +62,17 @@
 
         <h1>HTTP Auth Interceptor Module Demo</h1>
         <h2>for AngularJS</h2>
-        
+
         <h3>What is the purpose of this demo?</h3>
         <p>
           This demo application is to show you the implementation of the concept
-          described in 
+          described in
           <a href="http://www.espeo.pl/2012/02/26/authentication-in-angularjs-application">
             Authentication in AngularJS (or similar) based application.
           </a>
         </p>
         <p>
-          This application does not talk to real server, it uses 
+          This application does not talk to real server, it uses
           <a href="http://docs.angularjs.org/api/ngMockE2E"> ngMockE2E module</a> instead.
         </p>
         <p>
@@ -84,7 +83,7 @@
           </a>
         </p>
         <p>
-          The source code of this demo is available in the same project as 
+          The source code of this demo is available in the same project as
           a <a href="http://pages.github.com/">GitHub Pages</a> branch here:
           <br>
           <a href="https://github.com/witoldsz/angular-http-auth/tree/gh-pages">
@@ -95,7 +94,7 @@
         <br>&nbsp;
         <h3>Enter some data and submit to send and access public data.</h3>
         <form ng-submit="publicAction()">
-          Enter public data: 
+          Enter public data:
           <input type="text" ng-model="publicData">
           <input type="submit" value="Submit"></input>
         </form>
@@ -115,12 +114,27 @@
         <br/>
         <br/>
 
+        <h3>Enter some data and submit to send and access admin-only data.</h3>
+        <form ng-submit="restrictedAdminAction()">
+          Enter restricted data:
+          <input type="text" ng-model="restrictedAdminData">
+          <input type="submit" value="Submit"></input>
+        </form>
+        <p ng-repeat="r in restrictedAdminContent">Server says: {{r}}</p>
+
+        <br/>
+        <br/>
+
         <h3>Press the button to log out.</h3>
         <input type="button" value="Log out" ng-click="logout()"></input>
         <p>
           The button will tell the server to forget about your session and also
-          it will remove sensitive data from page. 
+          it will remove sensitive data from page.
         </p>
+
+        <br/>
+        <br/>
+
         <p>
           In real application it could do
           something else like:
@@ -132,10 +146,10 @@
         </ul>
 
         <div class="clear">&nbsp;</div>
-        
+
         <hr>
         <br>&nbsp;
-    
+
         <div id="disqus_thread"></div>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
@@ -152,7 +166,7 @@
         <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
       </div>
     </div>
-        
+
     <script src="lib/jquery-1.7.2.js" type="text/javascript"></script>
     <script src="lib/angular-1.0.1.js" type="text/javascript"></script>
     <script src="lib/angular-mocks-1.0.1.js" type="text/javascript"></script>
