@@ -15,12 +15,14 @@
       /**
        * call this function to indicate that authentication was successfull and trigger a 
        * retry of all deferred requests.
+       * @param httpUpdate an optional function that filters http configuration objects
+       *                      allowing to change the request before retrying
        * @param data an optional argument to pass on to $broadcast which may be useful for
        * example if you need to pass through details of the user that was logged in
        */
-      loginConfirmed: function(data) {
+      loginConfirmed: function(httpUpdate, data) {
         $rootScope.$broadcast('event:auth-loginConfirmed', data);
-        httpBuffer.retryAll();
+        httpBuffer.retryAll(httpUpdate);
       }
     };
   }])
@@ -93,9 +95,13 @@
       /**
        * Retries all the buffered requests clears the buffer.
        */
-      retryAll: function() {
+      retryAll: function(httpUpdate) {
+        if (!httpUpdate) {
+          httpUpdate = function(config) { return config; };
+        }
+
         for (var i = 0; i < buffer.length; ++i) {
-          retryHttpRequest(buffer[i].config, buffer[i].deferred);
+          retryHttpRequest(httpUpdate(buffer[i].config), buffer[i].deferred);
         }
         buffer = [];
       }
