@@ -21,6 +21,9 @@
       loginConfirmed: function(data) {
         $rootScope.$broadcast('event:auth-loginConfirmed', data);
         httpBuffer.retryAll();
+      },
+      noAccessConfirmed: function () {
+        $rootScope.$broadcast('event:auth-noAccessConfirmed');
       }
     };
   }])
@@ -43,6 +46,9 @@
           httpBuffer.append(response.config, deferred);
           $rootScope.$broadcast('event:auth-loginRequired');
           return deferred.promise;
+        }
+        else if (response.status === 403 && !response.config.ignoreAuthModule) {
+          $rootScope.$broadcast('event:auth-noAccess');
         }
         // otherwise, default behaviour
         return $q.reject(response);
