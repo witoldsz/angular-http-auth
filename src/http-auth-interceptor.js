@@ -13,7 +13,7 @@
   .factory('authService', ['$rootScope','httpBuffer', function($rootScope, httpBuffer) {
     return {
       /**
-       * call this function to indicate that authentication was successfull and trigger a
+       * Call this function to indicate that authentication was successfull and trigger a
        * retry of all deferred requests.
        * @param data an optional argument to pass on to $broadcast which may be useful for
        * example if you need to pass through details of the user that was logged in
@@ -22,6 +22,17 @@
         var updater = configUpdater || function(config) {return config;};
         $rootScope.$broadcast('event:auth-loginConfirmed', data);
         httpBuffer.retryAll(updater);
+      },
+
+      /**
+       * Call this function to indicate that authentication should not proceed.
+       * All deferred requests will be abandoned or rejected (if reason is provided).
+       * @param data an optional argument to pass on to $broadcast.
+       * @param reason if provided, the requests are rejected; abandoned otherwise.
+       */
+      loginCancelled: function(data, reason) {
+        httpBuffer.rejectAll(reason);
+        $rootScope.$broadcast('event:auth-loginCancelled', data);
       }
     };
   }])
@@ -89,6 +100,18 @@
           config: config,
           deferred: deferred
         });
+      },
+
+      /**
+       * Abandon or reject (if reason provided) all the buffered requests.
+       */
+      rejectAll: function(reason) {
+        if (reason) {
+          for (var i = 0; i < buffer.length; ++i) {
+            buffer[i].deferred.reject(reason);
+          }
+        }
+        buffer = [];
       },
 
       /**
