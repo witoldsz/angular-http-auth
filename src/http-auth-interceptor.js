@@ -21,6 +21,16 @@
       loginConfirmed: function(data) {
         $rootScope.$broadcast('event:auth-loginConfirmed', data);
         httpBuffer.retryAll();
+      },
+
+      /**
+       * call this function to indicate that authentication should not proceed.
+       * All deferred requests will be cancelled.
+       * @param data an optional argument to pass on to $broadcast.
+       */
+      loginCancelled: function(data) {
+        httpBuffer.rejectAll();
+        $rootScope.$broadcast('event:auth-loginCancelled', data);
       }
     };
   }])
@@ -88,6 +98,21 @@
           config: config, 
           deferred: deferred
         });      
+      },
+
+      /**
+       * anything deferred shouldn't happen, so reject it
+       * and clear the buffer
+       */
+      rejectAll: function() {
+        for (var i =0; i < buffer.length; i++) {
+          try {
+            buffer[i].deferred.reject();
+          }
+          catch (err) {
+          }
+        }
+        buffer = [];
       },
               
       /**
