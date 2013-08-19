@@ -18,7 +18,7 @@
        * @param data an optional argument to pass on to $broadcast which may be useful for
        * example if you need to pass through details of the user that was logged in
        */
-      confirmLogin: function(data) {
+      loginConfirmed: function(data) {
         $rootScope.$broadcast('event:auth-loginConfirmed', data);
         httpBuffer.retryAll();
       },
@@ -28,8 +28,8 @@
        * All deferred requests will be cancelled.
        * @param data an optional argument to pass on to $broadcast.
        */
-      cancelLogin: function(data) {
-        httpBuffer.clearAll();
+      loginCancelled: function(data) {
+        httpBuffer.rejectAll();
         $rootScope.$broadcast('event:auth-loginCancelled', data);
       }
     };
@@ -120,10 +120,10 @@
        * anything deferred shouldn't happen, so reject it
        * and clear the buffer
        */
-      clearAll: function() {
+      rejectAll: function() {
         for (var i =0; i < buffer.length; i++) {
           try {
-            buffer[i].deferred.reject();
+            buffer[i].deferred.reject('[http-auth-cancelled]');
           }
           catch (err) {
           }
