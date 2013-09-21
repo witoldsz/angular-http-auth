@@ -42,7 +42,7 @@
         if (response.status === 401 && !response.config.ignoreAuthModule) {
           var deferred = $q.defer();
           httpBuffer.append(response.config, deferred);
-          $rootScope.$broadcast('event:auth-loginRequired');
+          $rootScope.$broadcast('event:auth-loginRequired', response.config);
           return deferred.promise;
         }
         // otherwise, default behaviour
