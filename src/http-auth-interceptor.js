@@ -46,6 +46,12 @@
 
     var interceptor = ['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
       function success(response) {
+        if (response.config.method == 'JSONP' && response.data.statusCode === 401) {
+          var deferred = $q.defer();
+          httpBuffer.append(response.config, deferred);
+          $rootScope.$broadcast('event:auth-loginRequired');
+          return deferred.promise;
+        }
         return response;
       }
 
