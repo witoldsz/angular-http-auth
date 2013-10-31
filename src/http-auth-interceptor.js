@@ -107,7 +107,7 @@
        */
       rejectAll: function(reason) {
         if (reason) {
-          for (var i in buffer) {
+          for (var i = 0; i < buffer.length; ++i) {
             buffer[i].deferred.reject(reason);
           }
         }
@@ -118,7 +118,7 @@
        * Retries all the buffered requests clears the buffer.
        */
       retryAll: function(updater) {
-        for (var i in buffer) {
+        for (var i = 0; i < buffer.length; ++i) {
           retryHttpRequest(updater(buffer[i].config), buffer[i].deferred);
         }
         buffer = [];
