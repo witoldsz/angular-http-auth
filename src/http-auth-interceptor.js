@@ -45,16 +45,24 @@
   .config(['$httpProvider', function($httpProvider) {
 
     var interceptor = ['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
+
+      var requireAuth = function() {
+          var deferred = $q.defer();
+          httpBuffer.append(response.config, deferred);
+          $rootScope.$broadcast('event:auth-loginRequired');
+          return deferred.promise;
+      }
+
       function success(response) {
+        if (response.config.method == 'JSONP' && response.data.statusCode === 401 && !response.config.ignoreAuthModule) {
+          return requireAuth();
+        }
         return response;
       }
 
       function error(response) {
         if (response.status === 401 && !response.config.ignoreAuthModule) {
-          var deferred = $q.defer();
-          httpBuffer.append(response.config, deferred);
-          $rootScope.$broadcast('event:auth-loginRequired', response);
-          return deferred.promise;
+          return requireAuth();
         }
         // otherwise, default behaviour
         return $q.reject(response);
