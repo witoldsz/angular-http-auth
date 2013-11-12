@@ -43,29 +43,20 @@
    * and broadcasts 'event:angular-auth-loginRequired'.
    */
   .config(['$httpProvider', function($httpProvider) {
-
-    var interceptor = ['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
-      function success(response) {
-        return response;
-      }
-
-      function error(response) {
-        if (response.status === 401 && !response.config.ignoreAuthModule) {
-          var deferred = $q.defer();
-          httpBuffer.append(response.config, deferred);
-          $rootScope.$broadcast('event:auth-loginRequired', response);
-          return deferred.promise;
-        }
-        // otherwise, default behaviour
-        return $q.reject(response);
-      }
-
-      return function(promise) {
-        return promise.then(success, error);
-      };
-
-    }];
-    $httpProvider.responseInterceptors.push(interceptor);
+      $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
+          return {
+              'responseError': function(rejection) {
+                  if (rejection.status === 401 && !rejection.config.ignoreAuthModule) {
+                      var deferred = $q.defer();
+                      httpBuffer.append(rejection.config, deferred);
+                      $rootScope.$broadcast('event:auth-loginRequired', rejection);
+                      return deferred.promise;
+                  }
+                  // otherwise, default behaviour
+                  return $q.reject(rejection);
+              }
+          }
+      }]);
   }]);
 
   /**
