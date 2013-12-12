@@ -1,0 +1,14 @@
+{
+  "author": "Witold Szczerba",
+  "name": "angular-http-auth",
+  "version": "1.2.1",
+  "homepage": "https://github.com/witoldsz/angular-http-auth",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/witoldsz/angular-http-auth.git"
+  },
+  "main": "./src/http-auth-interceptor.js",
+  "dependencies": {
+    "angular": "^1.2"
+  }
+}
