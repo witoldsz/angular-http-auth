@@ -46,11 +46,15 @@
     $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
       return {
         responseError: function(rejection) {
-          if (rejection.status === 401 && !rejection.config.ignoreAuthModule) {
-            var deferred = $q.defer();
-            httpBuffer.append(rejection.config, deferred);
+          if (rejection.status === 401) {
             $rootScope.$broadcast('event:auth-loginRequired', rejection);
-            return deferred.promise;
+
+            if (!rejection.config.ignoreAuthModule) {
+
+              var deferred = $q.defer();
+              httpBuffer.append(rejection.config, deferred);
+              return deferred.promise;
+            }
           }
           // otherwise, default behaviour
           return $q.reject(rejection);
@@ -87,6 +91,7 @@
        * Appends HTTP request configuration object with deferred response attached to buffer.
        */
       append: function(config, deferred) {
+        debugger;
         buffer.push({
           config: config,
           deferred: deferred
