@@ -91,7 +91,6 @@
        * Appends HTTP request configuration object with deferred response attached to buffer.
        */
       append: function(config, deferred) {
-        debugger;
         buffer.push({
           config: config,
           deferred: deferred
