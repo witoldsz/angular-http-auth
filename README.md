@@ -41,3 +41,9 @@ to HTTP 401 response.
 * your initial failed request will now be retried and when proper response is finally received,
 the `function(response) {do-something-with-response}` will fire,
 * your application will continue as nothing had happened.
+
+###Advanced use case:
+Same beginning as before but,
+* once your application figures out the authentication is OK, call: `authService.loginConfirmed([data], [updateConfigFunc)`,
+* your initial failed request will now be retried but you can supply additional data to observers who are listening for `event:auth-loginConfirmed`, and all your queued http requests will be recalculated by your `updateConfigFunc(httpConfig)` function. This is very usefull if you need to update the headers with new credentials and/or tokens from your successful login.
+
