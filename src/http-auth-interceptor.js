@@ -48,7 +48,7 @@
         responseError: function(rejection) {
           if (rejection.status === 401 && !rejection.config.ignoreAuthModule) {
             var deferred = $q.defer();
-            if (!rejection.config.retryAuthModule) {
+            if (!rejection.config.dontRetry) {
               httpBuffer.append(rejection.config, deferred);
             }
             $rootScope.$broadcast('event:auth-loginRequired', rejection);
