@@ -40,7 +40,7 @@
   /**
    * $http interceptor.
    * On 401 response (without 'ignoreAuthModule' option) stores the request
-   * and broadcasts 'event:angular-auth-loginRequired'.
+   * and broadcasts 'event:auth-loginRequired'.
    */
   .config(['$httpProvider', function($httpProvider) {
     $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
