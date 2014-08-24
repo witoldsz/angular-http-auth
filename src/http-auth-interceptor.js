@@ -52,6 +52,15 @@
             $rootScope.$broadcast('event:auth-loginRequired', rejection);
             return deferred.promise;
           }
+          if (rejection.status === 403) {
+              if (rejection.data.expects_profile) {
+                  $rootScope.$broadcast('event:auth-profileRequired', rejection);
+              }
+              if (rejection.data.expects_subscription_upgrade) {
+                  $rootScope.$broadcast('event:auth-subscriptionUpgradeRequired', rejection);
+              }
+              return $q.reject(rejection);
+          }
           // otherwise, default behaviour
           return $q.reject(rejection);
         }
