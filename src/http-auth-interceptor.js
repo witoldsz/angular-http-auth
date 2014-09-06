@@ -46,7 +46,7 @@
     $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
       return {
         responseError: function(rejection) {
-          if (rejection.status === 401 && !rejection.config.ignoreAuthModule) {
+          if ((rejection.status === 401 || rejection.status === 403) && !rejection.config.ignoreAuthModule) {
             var deferred = $q.defer();
             httpBuffer.append(rejection.config, deferred);
             $rootScope.$broadcast('event:auth-loginRequired', rejection);
