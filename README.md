@@ -30,6 +30,10 @@ $broadcast. This may be useful, for example if you need to pass through details 
 that was logged in. The `authService` will then retry all the requests previously failed due
 to HTTP 401 response.
 
+In the event that a requested resource returns an HTTP 403 response (i.e. the user is 
+authenticated but not authorized to access the resource), the user's request is discarded and 
+the 'event:auth-authorizationRequired' message is broadcased from $rootScope.
+
 ###Typical use case:
 
 * somewhere (some service or controller) the: `$http(...).then(function(response) { do-something-with-response })` is invoked,
