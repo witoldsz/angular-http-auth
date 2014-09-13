@@ -32,7 +32,7 @@ to HTTP 401 response.
 
 In the event that a requested resource returns an HTTP 403 response (i.e. the user is 
 authenticated but not authorized to access the resource), the user's request is discarded and 
-the 'event:auth-authorizationRequired' message is broadcased from $rootScope.
+the `event:auth-authorizationRequired` message is broadcased from $rootScope.
 
 ###Typical use case:
 
