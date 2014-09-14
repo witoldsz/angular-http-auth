@@ -59,7 +59,7 @@
                 $rootScope.$broadcast('event:auth-loginRequired', rejection);
                 return deferred.promise;
               case 403:
-                $rootScope.$broadcast('event:auth-authorizationRequired', rejection);
+                $rootScope.$broadcast('event:auth-forbidden', rejection);
                 break;
             }
           }
