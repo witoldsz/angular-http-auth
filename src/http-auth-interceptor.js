@@ -45,7 +45,7 @@
    * On 401 response (without 'ignoreAuthModule' option) stores the request
    * and broadcasts 'event:auth-loginRequired'.
    * On 403 response (without 'ignoreAuthModule' option) discards the request
-   * and broadcasts 'event:auth-authorizationRequired'.
+   * and broadcasts 'event:auth-forbidden'.
    */
   .config(['$httpProvider', function($httpProvider) {
     $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
