@@ -10,8 +10,14 @@
 
   angular.module('http-auth-interceptor', ['http-auth-interceptor-buffer'])
 
-  .factory('authService', ['$rootScope','httpBuffer', function($rootScope, httpBuffer) {
-    return {
+  /**
+   * $http interceptor.
+   * On 401 response (without 'ignoreAuthModule' option) stores the request
+   * and broadcasts 'event:auth-loginRequired'.
+   */
+  .config(['$httpProvider', function($httpProvider) {
+    $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
+
       /**
        * Call this function to indicate that authentication was successfull and trigger a
        * retry of all deferred requests.
@@ -21,11 +27,11 @@
        * requests that are retried after having logged in.  This can be used for example
        * to add an authentication token.  It must return the request.
        */
-      loginConfirmed: function(data, configUpdater) {
+      function loginConfirmed(data, configUpdater) {
         var updater = configUpdater || function(config) {return config;};
         $rootScope.$broadcast('event:auth-loginConfirmed', data);
         httpBuffer.retryAll(updater);
-      },
+      }
 
       /**
        * Call this function to indicate that authentication should not proceed.
@@ -33,26 +39,21 @@
        * @param data an optional argument to pass on to $broadcast.
        * @param reason if provided, the requests are rejected; abandoned otherwise.
        */
-      loginCancelled: function(data, reason) {
+      function cancelLogin(data, reason) {
         httpBuffer.rejectAll(reason);
         $rootScope.$broadcast('event:auth-loginCancelled', data);
       }
-    };
-  }])
-
-  /**
-   * $http interceptor.
-   * On 401 response (without 'ignoreAuthModule' option) stores the request
-   * and broadcasts 'event:auth-loginRequired'.
-   */
-  .config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
-      return {
+      
+	  return {
         responseError: function(rejection) {
           if (rejection.status === 401 && !rejection.config.ignoreAuthModule) {
             var deferred = $q.defer();
             httpBuffer.append(rejection.config, deferred);
-            $rootScope.$broadcast('event:auth-loginRequired', rejection);
+            $rootScope.$broadcast('event:auth-loginRequired', {
+              rejection: rejection,
+              confirmLogin: loginConfirmed,
+              cancelLogin: cancelLogin
+            });
             return deferred.promise;
           }
           // otherwise, default behaviour
