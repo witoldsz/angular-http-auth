@@ -49,5 +49,5 @@ the `function(response) {do-something-with-response}` will fire,
 ###Advanced use case:
 Same beginning as before but,
 * once your application figures out the authentication is OK, call: `authService.loginConfirmed([data], [updateConfigFunc])`,
-* your initial failed request will now be retried but you can supply additional data to observers who are listening for `event:auth-loginConfirmed`, and all your queued http requests will be recalculated by your `updateConfigFunc(httpConfig)` function. This is very usefull if you need to update the headers with new credentials and/or tokens from your successful login.
+* your initial failed request will now be retried but you can supply additional data to observers who are listening for `event:auth-loginConfirmed`, and all your queued http requests will be recalculated by your `updateConfigFunc(httpConfig)` function. This is very useful if you need to update the headers with new credentials and/or tokens from your successful login.
 
