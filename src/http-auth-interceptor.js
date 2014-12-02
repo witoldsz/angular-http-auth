@@ -57,7 +57,8 @@
                 var deferred = $q.defer();
                 httpBuffer.append(rejection.config, deferred);
                 $rootScope.$broadcast('event:auth-loginRequired', rejection);
-                return deferred.promise;
+                // return deferred.promise;
+                return $q.reject(rejection); //why prevent the default behavior?
               case 403:
                 $rootScope.$broadcast('event:auth-forbidden', rejection);
                 break;
