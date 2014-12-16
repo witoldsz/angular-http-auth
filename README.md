@@ -13,6 +13,12 @@ Launch demo [here](http://witoldsz.github.com/angular-http-auth/)
 or switch to [gh-pages](https://github.com/witoldsz/angular-http-auth/tree/gh-pages)
 branch for source code of the demo.
 
+Usage
+------
+
+- Install via bower: `bower install --save`
+- Include as a dependency in your app: `angular.module('myApp', ['http-auth-interceptor'])`
+
 Manual
 ------
 
