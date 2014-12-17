@@ -47,7 +47,31 @@ the `function(response) {do-something-with-response}` will fire,
 * your application will continue as nothing had happened.
 
 ###Advanced use case:
-Same beginning as before but,
-* once your application figures out the authentication is OK, call: `authService.loginConfirmed([data], [updateConfigFunc])`,
-* your initial failed request will now be retried but you can supply additional data to observers who are listening for `event:auth-loginConfirmed`, and all your queued http requests will be recalculated by your `updateConfigFunc(httpConfig)` function. This is very usefull if you need to update the headers with new credentials and/or tokens from your successful login.
+
+####Sending data to listeners:
+You can supply additional data to observers accross your application who are listening for `event:auth-loginConfirmed`: 
+
+      $scope.$on('event:auth-loginConfirmed', function(event, data){
+      	$rootScope.isLoggedin = true;
+      	$log.log(data)
+      });
+
+Use the `authService.loginConfirmed([data])` method to emit data with your login event.
+
+####Updating [$http(config)](https://docs.angularjs.org/api/ng/service/$http):
+Successful login means that the previous request are ready to be fired again, however now that login has occured certain aspects of the previous requests might need to be modified on the fly. This is particularly important in a token based authentication scheme where an authorization token should be added to the header.
+
+The `loginConfirmed` method supports the injection of an Updater function that will apply changes to the http config object.
+
+    authService.loginConfirmed([data], [Updater-Function])
+    
+    //application of tokens to previously fired requests:
+    var token = reponse.token;
+    
+    authService.loginConfirmed('success', function(config){
+      config.headers["Authorization"] = token;
+      return config;
+    })
+
+The initial failed request will now be retried, all queued http requests will be recalculated using the Updater-Function.
 
