@@ -4,7 +4,7 @@ for AngularJS
 -------------
 
 This is the implementation of the concept described in
-[Authentication in AngularJS (or similar) based application](http://www.espeo.pl/2012/02/26/authentication-in-angularjs-application).
+[Authentication in AngularJS (or similar) based application](http://www.espeo.pl/1-authentication-in-angularjs-application/).
 
 There are releases for both AngularJS **1.0.x** and **1.2.x**,
 see [releases](https://github.com/witoldsz/angular-http-auth/releases).
