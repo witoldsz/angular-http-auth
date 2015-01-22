@@ -55,7 +55,7 @@ the `function(response) {do-something-with-response}` will fire,
 ###Advanced use case:
 
 ####Sending data to listeners:
-You can supply additional data to observers accross your application who are listening for `event:auth-loginConfirmed`: 
+You can supply additional data to observers across your application who are listening for `event:auth-loginConfirmed`: 
 
       $scope.$on('event:auth-loginConfirmed', function(event, data){
       	$rootScope.isLoggedin = true;
