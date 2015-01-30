@@ -40,6 +40,10 @@ In the event that a requested resource returns an HTTP 403 response (i.e. the us
 authenticated but not authorized to access the resource), the user's request is discarded and 
 the `event:auth-forbidden` message is broadcasted from $rootScope.
 
+#### Ignoring the 401 interceptor
+
+Sometimes you might not want the intercepter to intercept a request even if one returns 401 or 403. In a case like this you can add `ignoreAuthModule: true` to the request config. A common use case for this would be, for example, a login request which returns 401 if the login credentials are invalid.
+
 ###Typical use case:
 
 * somewhere (some service or controller) the: `$http(...).then(function(response) { do-something-with-response })` is invoked,
