@@ -16,7 +16,7 @@ branch for source code of the demo.
 Usage
 ------
 
-- Install via bower: `bower install --save`
+- Install via bower: `bower install --save angular-http-auth`
 - Include as a dependency in your app: `angular.module('myApp', ['http-auth-interceptor'])`
 
 Manual
