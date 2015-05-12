@@ -1,0 +1,17 @@
+{
+  "name": "angular-http-auth",
+  "version": "0.1.0",
+  "author": {
+    "name": "Witold Szczerba"
+  },
+  "devDependencies": {
+    "karma": "~0.8.5",
+    "grunt": "~0.4.1",
+    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-concat": "~0.2.x",
+    "grunt-contrib-uglify": "~0.2.x",
+    "grunt-contrib-jshint": "~0.4.x",
+    "grunt-karma": "~0.4.x",
+    "grunt-conventional-changelog": "0.0.12"
+  }
+}
