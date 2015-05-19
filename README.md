@@ -22,9 +22,9 @@ Usage
 Manual
 ------
 
-This module installs $http interceptor and provides the `authService`.
+This module installs $http and $sailsSocket interceptor and provides the `authService`.
 
-The $http interceptor does the following:
+The $http and $sailsSocket interceptor does the following:
 the configuration object (this is the requested URL, payload and parameters)
 of every HTTP 401 response is buffered and everytime it happens, the
 `event:auth-loginRequired` message is broadcasted from $rootScope.
@@ -46,7 +46,7 @@ Sometimes you might not want the intercepter to intercept a request even if one 
 
 ###Typical use case:
 
-* somewhere (some service or controller) the: `$http(...).then(function(response) { do-something-with-response })` is invoked,
+* somewhere (some service or controller) the: `$http(...).then(function(response) { do-something-with-response })` or `$sailsSocket(...).then(function(response) { do-something-with-response })` is invoked,
 * the response of that requests is a **HTTP 401**,
 * `http-auth-interceptor` captures the initial request and broadcasts `event:auth-loginRequired`,
 * your application intercepts this to e.g. show a login dialog:
