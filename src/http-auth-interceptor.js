@@ -69,15 +69,22 @@
     return provider != null ? provider.interceptors.push('authInterceptor') : void 0;
   };
 
-  angular.module('http-auth-interceptor', ['http-auth-interceptor-buffer', 'sails.io']).factory('authInterceptor', ['$rootScope', '$q', 'httpBuffer', authInterceptor]).factory('authService', ['$rootScope', 'httpBuffer', authService]).config(['$httpProvider', provider]).config(['$sailsSocket', provider]);
+  angular.module('http-auth-interceptor', ['http-auth-interceptor-buffer', 'sails.io']).factory('authInterceptor', ['$rootScope', '$q', 'httpBuffer', authInterceptor]).factory('authService', ['$rootScope', 'httpBuffer', authService]).config(['$httpProvider', provider]).config(['$sailsSocketProvider', provider]);
 
   $injector = function($injector) {
     var $http, buffer, retryHttpRequest;
     buffer = [];
     $http = null;
     retryHttpRequest = function(config, deferred) {
+      var $sailsSocket;
       $http = $http || $injector.get('$http');
-      return $http(config).then(function(response) {
+      $http(config).then(function(response) {
+        return deferred.resolve(response);
+      })["catch"](function(response) {
+        return deferred.reject(response);
+      });
+      $sailsSocket = $sailsSocket || $injector.get('$sailsSocket');
+      return $sailsSocket(config).then(function(response) {
         return deferred.resolve(response);
       })["catch"](function(response) {
         return deferred.reject(response);

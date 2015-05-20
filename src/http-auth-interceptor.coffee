@@ -56,7 +56,7 @@ angular.module 'http-auth-interceptor', ['http-auth-interceptor-buffer', 'sails.
 
 	.config ['$httpProvider', provider]
 
-	.config ['$sailsSocket', provider]
+	.config ['$sailsSocketProvider', provider]
 	
 $injector = ($injector) ->
 	buffer = []
@@ -66,6 +66,13 @@ $injector = ($injector) ->
 	retryHttpRequest = (config, deferred) ->
 		$http = $http || $injector.get('$http')
 		$http(config)
+			.then (response) ->
+				deferred.resolve(response)
+			.catch (response) ->
+				deferred.reject(response)
+				
+		$sailsSocket = $sailsSocket || $injector.get('$sailsSocket')
+		$sailsSocket(config)
 			.then (response) ->
 				deferred.resolve(response)
 			.catch (response) ->
