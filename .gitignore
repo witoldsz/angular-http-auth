@@ -1,3 +1,17 @@
 node_modules
 bower_components
 components
+
+.idea/.name
+
+.idea/angular-http-auth.iml
+
+.idea/encodings.xml
+
+.idea/modules.xml
+
+.idea/scopes/scope_settings.xml
+
+.idea/vcs.xml
+
+.idea/workspace.xml
