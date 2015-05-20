@@ -17,7 +17,7 @@
        * retry of all deferred requests.
        * @param data an optional argument to pass on to $broadcast which may be useful for
        * example if you need to pass through details of the user that was logged in
-       * @param configUpdater an optional transformation function that can modify the                                                                                                                                                   
+       * @param configUpdater an optional transformation function that can modify the
        * requests that are retried after having logged in.  This can be used for example
        * to add an authentication token.  It must return the request.
        */
@@ -55,7 +55,8 @@
             switch (rejection.status) {
               case 401:
                 var deferred = $q.defer();
-                httpBuffer.append(rejection.config, deferred);
+                  if (!rejection.config.ignoreAuthBuffer)
+                      httpBuffer.append(rejection.config, deferred);
                 $rootScope.$broadcast('event:auth-loginRequired', rejection);
                 return deferred.promise;
               case 403:
