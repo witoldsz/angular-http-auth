@@ -1,0 +1,15 @@
+{
+  "name": "angular-http-auth",
+  "version": "1.2.2",
+  "description": "HTTP Auth Interceptor Module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/witoldsz/angular-http-auth.git"
+  },
+  "keywords": [
+    "angular",
+    "auth"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/witoldsz/angular-http-auth"
+}
