@@ -17,6 +17,7 @@ Usage
 ------
 
 - Install via bower: `bower install --save angular-http-auth`
+- ...or via npm: `npm install --save angular-http-auth`
 - Include as a dependency in your app: `angular.module('myApp', ['http-auth-interceptor'])`
 
 Manual
@@ -36,8 +37,8 @@ $broadcast. This may be useful, for example if you need to pass through details 
 that was logged in. The `authService` will then retry all the requests previously failed due
 to HTTP 401 response.
 
-In the event that a requested resource returns an HTTP 403 response (i.e. the user is 
-authenticated but not authorized to access the resource), the user's request is discarded and 
+In the event that a requested resource returns an HTTP 403 response (i.e. the user is
+authenticated but not authorized to access the resource), the user's request is discarded and
 the `event:auth-forbidden` message is broadcasted from $rootScope.
 
 #### Ignoring the 401 interceptor
@@ -59,7 +60,7 @@ the `function(response) {do-something-with-response}` will fire,
 ###Advanced use case:
 
 ####Sending data to listeners:
-You can supply additional data to observers across your application who are listening for `event:auth-loginConfirmed`: 
+You can supply additional data to observers across your application who are listening for `event:auth-loginConfirmed`:
 
       $scope.$on('event:auth-loginConfirmed', function(event, data){
       	$rootScope.isLoggedin = true;
@@ -74,10 +75,10 @@ Successful login means that the previous request are ready to be fired again, ho
 The `loginConfirmed` method supports the injection of an Updater function that will apply changes to the http config object.
 
     authService.loginConfirmed([data], [Updater-Function])
-    
+
     //application of tokens to previously fired requests:
     var token = reponse.token;
-    
+
     authService.loginConfirmed('success', function(config){
       config.headers["Authorization"] = token;
       return config;
