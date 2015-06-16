@@ -23,18 +23,18 @@ Usage
 Manual
 ------
 
-This module installs $http interceptor and provides the `authService`.
+This module installs $http interceptor and provides the `httpAuthService`.
 
 The $http interceptor does the following:
 the configuration object (this is the requested URL, payload and parameters)
 of every HTTP 401 response is buffered and everytime it happens, the
 `event:auth-loginRequired` message is broadcasted from $rootScope.
 
-The `authService` has only one method: #loginConfirmed().
+The `httpAuthService` has only one method: #loginConfirmed().
 You are responsible to invoke this method after user logged in. You may optionally pass in
 a data argument to the loginConfirmed method which will be passed on to the loginConfirmed
 $broadcast. This may be useful, for example if you need to pass through details of the user
-that was logged in. The `authService` will then retry all the requests previously failed due
+that was logged in. The `httpAuthService` will then retry all the requests previously failed due
 to HTTP 401 response.
 
 In the event that a requested resource returns an HTTP 403 response (i.e. the user is
@@ -52,7 +52,7 @@ Sometimes you might not want the intercepter to intercept a request even if one 
 * `http-auth-interceptor` captures the initial request and broadcasts `event:auth-loginRequired`,
 * your application intercepts this to e.g. show a login dialog:
  * DO NOT REDIRECT anywhere (you can hide your forms), just show login dialog
-* once your application figures out the authentication is OK, call: `authService.loginConfirmed()`,
+* once your application figures out the authentication is OK, call: `httpAuthService.loginConfirmed()`,
 * your initial failed request will now be retried and when proper response is finally received,
 the `function(response) {do-something-with-response}` will fire,
 * your application will continue as nothing had happened.
