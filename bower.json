@@ -8,6 +8,6 @@
   },
   "main": "./src/http-auth-interceptor.js",
   "dependencies": {
-    "angular": "^1.2"
+    "angular": "~1.2 ~1.3"
   }
 }
