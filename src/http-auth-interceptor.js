@@ -82,7 +82,7 @@
           return $q.reject(rejection);
         },
 		request : function(config) {
-			angular.extend(config, authConfigService.config);
+			angular.merge(config, authConfigService.config);
 			return config;
 	    }
       };
