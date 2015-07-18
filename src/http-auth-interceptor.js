@@ -60,6 +60,9 @@
    * and broadcasts 'event:auth-forbidden'.
    */
   .config(['$httpProvider', function($httpProvider) {
+
+    $httpProvider.defaults.withCredentials = true;
+
     $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', 'authConfigService', function($rootScope, $q, httpBuffer, authConfigService) {
       return {
         responseError: function(rejection) {
