@@ -10,7 +10,18 @@
 
   angular.module('http-auth-interceptor', ['http-auth-interceptor-buffer'])
 
-  .factory('authService', ['$rootScope','httpBuffer', function($rootScope, httpBuffer) {
+  	/**
+	 * Stores the config received upon login confirmation for the next requests
+	 */
+	.factory('authConfigService', function() {
+		return {
+			config : {
+				headers: {}
+			}
+		};
+	})
+  
+  .factory('authService', ['$rootScope','httpBuffer', 'authConfigService', function($rootScope, httpBuffer, authConfigService) {
     return {
       /**
        * Call this function to indicate that authentication was successfull and trigger a
@@ -23,6 +34,7 @@
        */
       loginConfirmed: function(data, configUpdater) {
         var updater = configUpdater || function(config) {return config;};
+        configUpdater(authConfigService.config);
         $rootScope.$broadcast('event:auth-loginConfirmed', data);
         httpBuffer.retryAll(updater);
       },
@@ -48,7 +60,7 @@
    * and broadcasts 'event:auth-forbidden'.
    */
   .config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
+    $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', 'authConfigService', function($rootScope, $q, httpBuffer, authConfigService) {
       return {
         responseError: function(rejection) {
           if (!rejection.config.ignoreAuthModule) {
@@ -65,7 +77,11 @@
           }
           // otherwise, default behaviour
           return $q.reject(rejection);
-        }
+        },
+		request : function(config) {
+			angular.extend(config, authConfigService.config);
+			return config;
+	    }
       };
     }]);
   }]);
