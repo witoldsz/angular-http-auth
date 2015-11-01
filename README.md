@@ -30,7 +30,7 @@ the configuration object (this is the requested URL, payload and parameters)
 of every HTTP 401 response is buffered and everytime it happens, the
 `event:auth-loginRequired` message is broadcasted from $rootScope.
 
-The `authService` has only one method: #loginConfirmed().
+The `authService` has only one method: `loginConfirmed()`.
 You are responsible to invoke this method after user logged in. You may optionally pass in
 a data argument to the loginConfirmed method which will be passed on to the loginConfirmed
 $broadcast. This may be useful, for example if you need to pass through details of the user
@@ -39,11 +39,11 @@ to HTTP 401 response.
 
 In the event that a requested resource returns an HTTP 403 response (i.e. the user is
 authenticated but not authorized to access the resource), the user's request is discarded and
-the `event:auth-forbidden` message is broadcasted from $rootScope.
+the `event:auth-forbidden` message is broadcast from $rootScope.
 
 #### Ignoring the 401 interceptor
 
-Sometimes you might not want the intercepter to intercept a request even if one returns 401 or 403. In a case like this you can add `ignoreAuthModule: true` to the request config. A common use case for this would be, for example, a login request which returns 401 if the login credentials are invalid.
+Sometimes you might not want the interceptor to intercept a request even if one returns 401 or 403. In a case like this you can add `ignoreAuthModule: true` to the request config. A common use case for this would be, for example, a login request which returns 401 if the login credentials are invalid.
 
 ###Typical use case:
 
@@ -70,7 +70,7 @@ You can supply additional data to observers across your application who are list
 Use the `authService.loginConfirmed([data])` method to emit data with your login event.
 
 ####Updating [$http(config)](https://docs.angularjs.org/api/ng/service/$http):
-Successful login means that the previous request are ready to be fired again, however now that login has occured certain aspects of the previous requests might need to be modified on the fly. This is particularly important in a token based authentication scheme where an authorization token should be added to the header.
+Successful login means that the previous request are ready to be fired again, however now that login has occurred certain aspects of the previous requests might need to be modified on the fly. This is particularly important in a token based authentication scheme where an authorization token should be added to the header.
 
 The `loginConfirmed` method supports the injection of an Updater function that will apply changes to the http config object.
 
