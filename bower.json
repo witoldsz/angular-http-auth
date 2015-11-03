@@ -9,5 +9,8 @@
   "main": "./src/http-auth-interceptor.js",
   "dependencies": {
     "angular": "^1.2"
-  }
+  },
+  "ignore": [
+    "package.json"
+  ]
 }
