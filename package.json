@@ -1,6 +1,6 @@
 {
   "name": "angular-http-auth",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "HTTP Auth Interceptor Module for AngularJS.",
   "main": "src/http-auth-interceptor.js",
   "repository": {
