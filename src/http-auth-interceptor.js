@@ -48,27 +48,31 @@
    * and broadcasts 'event:auth-forbidden'.
    */
   .config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
-      return {
-        responseError: function(rejection) {
-          var config = rejection.config || {};
-          if (!config.ignoreAuthModule) {
-            switch (rejection.status) {
-              case 401:
-                var deferred = $q.defer();
-                httpBuffer.append(config, deferred);
-                $rootScope.$broadcast('event:auth-loginRequired', rejection);
-                return deferred.promise;
-              case 403:
-                $rootScope.$broadcast('event:auth-forbidden', rejection);
-                break;
+    $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', '$timeout',
+      function($rootScope, $q, httpBuffer, $timeout) {
+        return {
+          responseError: function(rejection) {
+            var config = rejection.config || {};
+            if (!config.ignoreAuthModule) {
+              switch (rejection.status) {
+                case 401:
+                  var deferred = $q.defer();
+                  if (httpBuffer.bufferEmpty()) {
+                    $timeout($rootScope.$broadcast('event:auth-loginRequired', rejection));
+                  }
+                  httpBuffer.append(config, deferred);
+                  return deferred.promise;
+                case 403:
+                  $rootScope.$broadcast('event:auth-forbidden', rejection);
+                  break;
+              }
             }
+            // otherwise, default behaviour
+            return $q.reject(rejection);
           }
-          // otherwise, default behaviour
-          return $q.reject(rejection);
-        }
-      };
-    }]);
+        };
+      }
+    ]);
   }]);
 
   /**
@@ -125,6 +129,13 @@
           retryHttpRequest(updater(buffer[i].config), buffer[i].deferred);
         }
         buffer = [];
+      },
+
+      /**
+       * Check whether the buffer is empty
+       */
+      bufferEmpty: function() {
+        return buffer.length === 0;
       }
     };
   }]);
