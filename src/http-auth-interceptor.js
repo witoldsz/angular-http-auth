@@ -56,7 +56,7 @@
             switch (rejection.status) {
               case 401:
                 var deferred = $q.defer();
-                if (httpBuffer.bufferEmpty()) {
+                if (httpBuffer.isEmpty()) {
                   $timeout($rootScope.$broadcast('event:auth-loginRequired', rejection));
                 }
                 httpBuffer.append(config, deferred);
