@@ -5,6 +5,7 @@
  * (c) 2012 Witold Szczerba
  * License: MIT
  */
+
 (function () {
   'use strict';
 
@@ -129,3 +130,8 @@
     };
   }]);
 })();
+
+/* commonjs package manager support (eg componentjs) */
+if (typeof module !== "undefined" && typeof exports !== "undefined" && module.exports === exports){
+  module.exports = 'http-auth-interceptor';
+}
