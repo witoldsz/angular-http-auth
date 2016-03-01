@@ -86,3 +86,10 @@ The `loginConfirmed` method supports the injection of an Updater function that w
 
 The initial failed request will now be retried, all queued http requests will be recalculated using the Updater-Function.
 
+It is also possible to stop specific request from being retried, by returning ``false`` from the Updater-Function:
+
+    authService.loginConfirmed('success', function(config){
+      if (shouldSkipRetryOnSuccess(config))
+        return false;
+      return config;
+    })
