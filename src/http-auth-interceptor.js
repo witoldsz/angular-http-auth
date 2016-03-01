@@ -123,9 +123,8 @@
       retryAll: function(updater) {
         for (var i = 0; i < buffer.length; ++i) {
           var _cfg = updater(buffer[i].config);
-          if (_cfg === false)
-            continue;
-          retryHttpRequest(_cfg, buffer[i].deferred);
+          if (_cfg !== false)
+            retryHttpRequest(_cfg, buffer[i].deferred);
         }
         buffer = [];
       }
