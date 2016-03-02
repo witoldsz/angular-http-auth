@@ -48,7 +48,7 @@
    * and broadcasts 'event:auth-forbidden'.
    */
   .config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
+    $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', '$timeout', function($rootScope, $q, httpBuffer, $timeout) {
       return {
         responseError: function(rejection) {
           var config = rejection.config || {};
@@ -56,8 +56,10 @@
             switch (rejection.status) {
               case 401:
                 var deferred = $q.defer();
+                if (httpBuffer.isEmpty()) {
+                  $timeout($rootScope.$broadcast('event:auth-loginRequired', rejection));
+                }
                 httpBuffer.append(config, deferred);
-                $rootScope.$broadcast('event:auth-loginRequired', rejection);
                 return deferred.promise;
               case 403:
                 $rootScope.$broadcast('event:auth-forbidden', rejection);
@@ -127,6 +129,10 @@
             retryHttpRequest(_cfg, buffer[i].deferred);
         }
         buffer = [];
+      },
+
+      isEmpty: function() {
+        return buffer.length === 0;
       }
     };
   }]);
