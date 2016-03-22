@@ -56,8 +56,9 @@
             switch (rejection.status) {
               case 401:
                 var deferred = $q.defer();
-                httpBuffer.append(config, deferred);
-                $rootScope.$broadcast('event:auth-loginRequired', rejection);
+                var bufferLength = httpBuffer.append(config, deferred);
+                if (bufferLength === 1)
+                  $rootScope.$broadcast('event:auth-loginRequired', rejection);
                 return deferred.promise;
               case 403:
                 $rootScope.$broadcast('event:auth-forbidden', rejection);
@@ -97,9 +98,10 @@
     return {
       /**
        * Appends HTTP request configuration object with deferred response attached to buffer.
+       * @return {Number} The new length of the buffer.
        */
       append: function(config, deferred) {
-        buffer.push({
+        return buffer.push({
           config: config,
           deferred: deferred
         });
