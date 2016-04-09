@@ -30,11 +30,17 @@ the configuration object (this is the requested URL, payload and parameters)
 of every HTTP 401 response is buffered and everytime it happens, the
 `event:auth-loginRequired` message is broadcasted from $rootScope.
 
-The `authService` has only one method: `loginConfirmed()`.
-You are responsible to invoke this method after user logged in. You may optionally pass in
-a data argument to the loginConfirmed method which will be passed on to the loginConfirmed
+The `authService` has only 2 methods: `loginConfirmed()` and `loginCancelled()`.
+
+You are responsible to invoke `loginConfirmed()` after user logs in. You may optionally pass in
+a data argument to this method which will be passed on to the loginConfirmed
 $broadcast. This may be useful, for example if you need to pass through details of the user
 that was logged in. The `authService` will then retry all the requests previously failed due
+to HTTP 401 response.
+
+You are responsible to invoke `loginCancelled()` when authentication has been invalidated. You may optionally pass in
+a data argument to this method which will be passed on to the loginCancelled
+$broadcast. The `authService` will cancel all pending requests previously failed and buffered due
 to HTTP 401 response.
 
 In the event that a requested resource returns an HTTP 403 response (i.e. the user is
@@ -60,14 +66,19 @@ the `function(response) {do-something-with-response}` will fire,
 ###Advanced use case:
 
 ####Sending data to listeners:
-You can supply additional data to observers across your application who are listening for `event:auth-loginConfirmed`:
+You can supply additional data to observers across your application who are listening for `event:auth-loginConfirmed` and `event:auth-loginCancelled`:
 
       $scope.$on('event:auth-loginConfirmed', function(event, data){
       	$rootScope.isLoggedin = true;
       	$log.log(data)
       });
 
-Use the `authService.loginConfirmed([data])` method to emit data with your login event.
+      $scope.$on('event:auth-loginCancelled', function(event, data){
+        $rootScope.isLoggedin = false;
+        $log.log(data)
+      });
+
+Use the `authService.loginConfirmed([data])` and `authService.loginCancelled([data])` methods to emit data with your login and logout events.
 
 ####Updating [$http(config)](https://docs.angularjs.org/api/ng/service/$http):
 Successful login means that the previous request are ready to be fired again, however now that login has occurred certain aspects of the previous requests might need to be modified on the fly. This is particularly important in a token based authentication scheme where an authorization token should be added to the header.
