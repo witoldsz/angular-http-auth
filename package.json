@@ -1,6 +1,6 @@
 {
   "name": "angular-http-auth",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "HTTP Auth Interceptor Module for AngularJS.",
   "main": "src/http-auth-interceptor.js",
   "repository": {
@@ -24,12 +24,10 @@
   },
   "scripts": {
     "clean": "rimraf dist/*",
-
     "prebuild": "npm run clean -s && mkdirp dist",
     "build": "npm run build:minify -s && npm run build:copy -s",
     "build:minify": "uglifyjs src/http-auth-interceptor.js -o dist/http-auth-interceptor.min.js -c",
     "build:copy": "cat src/http-auth-interceptor.js > dist/http-auth-interceptor.js",
-
     "version": "npm run build && git add -A dist",
     "postversion": "git push && git push --tags"
   }
