@@ -19,9 +19,18 @@
   "homepage": "https://github.com/witoldsz/angular-http-auth",
   "devDependencies": {
     "mkdirp": "^0.5.1",
+    "rimraf": "^2.5.4",
     "uglifyjs": "^2.4.10"
   },
   "scripts": {
-    "minify": "mkdirp dist && uglifyjs src/http-auth-interceptor.js -o dist/http-auth-interceptor.min.js -c"
+    "clean": "rimraf dist/*",
+
+    "prebuild": "npm run clean -s && mkdirp dist",
+    "build": "npm run build:minify -s && npm run build:copy -s",
+    "build:minify": "uglifyjs src/http-auth-interceptor.js -o dist/http-auth-interceptor.min.js -c",
+    "build:copy": "cat src/http-auth-interceptor.js > dist/http-auth-interceptor.js",
+
+    "version": "npm run build && git add -A dist",
+    "postversion": "git push && git push --tags"
   }
 }
