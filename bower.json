@@ -12,5 +12,6 @@
   },
   "ignore": [
     "package.json"
-  ]
+  ],
+  "license": "MIT"
 }
