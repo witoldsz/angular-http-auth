@@ -104,3 +104,10 @@ It is also possible to stop specific request from being retried, by returning ``
         return false;
       return config;
     })
+
+###Testing
+
+```
+npm install
+npm test
+```

@@ -18,6 +18,10 @@
   ],
   "homepage": "https://github.com/witoldsz/angular-http-auth",
   "devDependencies": {
+    "angular": "^1.2",
+    "angular-mocks": "^1.2",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.3.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.5.4",
     "uglifyjs": "^2.4.10"
@@ -28,7 +32,9 @@
     "build": "npm run build:minify -s && npm run build:copy -s",
     "build:minify": "uglifyjs src/http-auth-interceptor.js -o dist/http-auth-interceptor.min.js -c",
     "build:copy": "cat src/http-auth-interceptor.js > dist/http-auth-interceptor.js",
+    "preversion": "npm test",
     "version": "npm run build && git add -A dist",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "test": "karma start karma.conf.js"
   }
 }

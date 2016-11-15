@@ -11,7 +11,9 @@
     "angular": "^1.2"
   },
   "ignore": [
-    "package.json"
+    "package.json",
+    "karma.conf.js",
+    "test.js"
   ],
   "license": "MIT"
 }
