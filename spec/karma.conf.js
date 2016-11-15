@@ -4,14 +4,14 @@
 module.exports = function(config) {
   config.set({
 
-    basePath: './',
+    basePath: '../',
 
     // List of files / patterns to load in the browser
     files: [
       'node_modules/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'src/http-auth-interceptor.js',
-      'tests.js'
+      'spec/*.spec.js'
     ],
 
     // Test results reporter to use
@@ -34,6 +34,11 @@ module.exports = function(config) {
     // Frameworks to use
     frameworks: ['jasmine'],
 
+    plugins: [
+      'karma-jasmine',
+      'karma-phantomjs-launcher'
+    ],
+
     // Start these browsers, currently available:
     // - Chrome
     // - ChromeCanary
@@ -42,13 +47,13 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome'],
+    browsers: ['PhantomJS'],
 
     // If browser does not capture in given timeout [ms], kill it
     captureTimeout: 60000,
 
     // Continuous Integration mode
-    // If true, it capture browsers, run tests and exit
-    singleRun: true
+    // If true, will capture browsers, run tests and exit
+    singleRun: false
   });
 };

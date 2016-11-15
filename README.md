@@ -107,7 +107,12 @@ It is also possible to stop specific request from being retried, by returning ``
 
 ###Testing
 
+Run tests and watch for changes:
 ```
-npm install
 npm test
+```
+
+Run tests only one time:
+```
+npm run test-single-run
 ```
