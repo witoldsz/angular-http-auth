@@ -13,7 +13,7 @@
   "ignore": [
     "package.json",
     "karma.conf.js",
-    "test.js"
+    "tests.js"
   ],
   "license": "MIT"
 }
