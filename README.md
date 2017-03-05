@@ -88,7 +88,7 @@ The `loginConfirmed` method supports the injection of an Updater function that w
     authService.loginConfirmed([data], [Updater-Function])
 
     //application of tokens to previously fired requests:
-    var token = reponse.token;
+    var token = response.token;
 
     authService.loginConfirmed('success', function(config){
       config.headers["Authorization"] = token;
