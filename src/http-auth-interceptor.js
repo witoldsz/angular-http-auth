@@ -93,6 +93,7 @@
         deferred.reject(response);
       }
       $http = $http || $injector.get('$http');
+      angular.extend(config.headers, $http.defaults.headers.common);
       $http(config).then(successCallback, errorCallback);
     }
 
