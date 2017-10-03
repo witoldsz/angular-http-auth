@@ -51,7 +51,7 @@ the `event:auth-forbidden` message is broadcast from $rootScope.
 
 Sometimes you might not want the interceptor to intercept a request even if one returns 401 or 403. In a case like this you can add `ignoreAuthModule: true` to the request config. A common use case for this would be, for example, a login request which returns 401 if the login credentials are invalid.
 
-###Typical use case:
+### Typical use case:
 
 * somewhere (some service or controller) the: `$http(...).then(function(response) { do-something-with-response })` is invoked,
 * the response of that requests is a **HTTP 401**,
@@ -63,9 +63,9 @@ Sometimes you might not want the interceptor to intercept a request even if one 
 the `function(response) {do-something-with-response}` will fire,
 * your application will continue as nothing had happened.
 
-###Advanced use case:
+### Advanced use case:
 
-####Sending data to listeners:
+#### Sending data to listeners:
 You can supply additional data to observers across your application who are listening for `event:auth-loginConfirmed` and `event:auth-loginCancelled`:
 
       $scope.$on('event:auth-loginConfirmed', function(event, data){
@@ -80,7 +80,7 @@ You can supply additional data to observers across your application who are list
 
 Use the `authService.loginConfirmed([data])` and `authService.loginCancelled([data])` methods to emit data with your login and logout events.
 
-####Updating [$http(config)](https://docs.angularjs.org/api/ng/service/$http):
+#### Updating [$http(config)](https://docs.angularjs.org/api/ng/service/$http):
 Successful login means that the previous request are ready to be fired again, however now that login has occurred certain aspects of the previous requests might need to be modified on the fly. This is particularly important in a token based authentication scheme where an authorization token should be added to the header.
 
 The `loginConfirmed` method supports the injection of an Updater function that will apply changes to the http config object.
