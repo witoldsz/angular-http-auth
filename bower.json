@@ -11,7 +11,8 @@
     "angular": "^1.2"
   },
   "ignore": [
-    "package.json"
+    "package.json",
+    "spec"
   ],
   "license": "MIT"
 }

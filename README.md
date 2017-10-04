@@ -104,3 +104,15 @@ It is also possible to stop specific request from being retried, by returning ``
         return false;
       return config;
     })
+
+###Testing
+
+Run tests and watch for changes:
+```
+npm test
+```
+
+Run tests only one time:
+```
+npm run test-single-run
+```

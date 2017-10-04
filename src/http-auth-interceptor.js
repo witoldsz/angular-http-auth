@@ -48,29 +48,31 @@
    * On 403 response (without 'ignoreAuthModule' option) discards the request
    * and broadcasts 'event:auth-forbidden'.
    */
-  .config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push(['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
-      return {
-        responseError: function(rejection) {
-          var config = rejection.config || {};
-          if (!config.ignoreAuthModule) {
-            switch (rejection.status) {
-              case 401:
-                var deferred = $q.defer();
-                var bufferLength = httpBuffer.append(config, deferred);
-                if (bufferLength === 1)
-                  $rootScope.$broadcast('event:auth-loginRequired', rejection);
-                return deferred.promise;
-              case 403:
-                $rootScope.$broadcast('event:auth-forbidden', rejection);
-                break;
-            }
+  .factory('requestService', ['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
+    return {
+      responseError: function(rejection) {
+        var config = rejection.config || {};
+        if (!config.ignoreAuthModule) {
+          switch (rejection.status) {
+            case 401:
+              var deferred = $q.defer();
+              var bufferLength = httpBuffer.append(config, deferred);
+              if (bufferLength === 1)
+                $rootScope.$broadcast('event:auth-loginRequired', rejection);
+              return deferred.promise;
+            case 403:
+              $rootScope.$broadcast('event:auth-forbidden', rejection);
+              break;
           }
-          // otherwise, default behaviour
-          return $q.reject(rejection);
         }
-      };
-    }]);
+        // otherwise, default behaviour
+        return $q.reject(rejection);
+      }
+    };
+  }])
+
+  .config(['$httpProvider', function($httpProvider) {
+    $httpProvider.interceptors.push('requestService');
   }]);
 
   /**

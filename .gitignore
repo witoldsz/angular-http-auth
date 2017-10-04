@@ -1,4 +1,4 @@
 node_modules
-npm-debug.log
 bower_components
 components
+*.log
